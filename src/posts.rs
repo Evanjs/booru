@@ -122,6 +122,10 @@ impl RootInterface {
         return self.tag_string_copyright.to_string();
     }
 
+    pub fn get_tag_string_character(&self) -> String {
+        return self.tag_string_character.to_string();
+    }
+
     pub fn get_tag_string_general(&self) -> String {
         return self.tag_string_general.to_string();
     }
@@ -130,8 +134,8 @@ impl RootInterface {
         return self.tag_string_artist.to_string();
     }
 
-    pub fn get_tag_string_character(&self) -> String {
-        return self.tag_string_character.to_string();
+    pub fn get_tag_string_meta(&self) -> String {
+        return self.tag_string_meta.to_string();
     }
 }
 
