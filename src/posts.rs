@@ -5,7 +5,7 @@ struct KeeperData {
 
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct RootInterface {
+pub struct Post {
     id: u64,
     created_at: String,
     uploader_id: u64,
@@ -80,7 +80,7 @@ pub struct RootInterface {
     preview_file_url: String,
 }
 
-impl RootInterface {
+impl Post {
 
     pub fn get_large_file_url(&self) -> String {
         return self.large_file_url.to_string();
@@ -93,6 +93,7 @@ impl RootInterface {
     pub fn get_image_height(&self) -> u64 {
         return self.image_height;
     }
+
 
     pub fn get_id(&self) -> u64 {
         return self.id;
@@ -143,6 +144,6 @@ fn default_if_empty<'de, D, T>(de: D) -> Result<T, D::Error>
     where D: serde::Deserializer<'de>, T: serde::Deserialize<'de> + Default,
 {
     use serde::Deserialize;
-    Option::<T>::deserialize(de).map(|x| x.unwrap_or_else(|| T::default()))
+    Option::<T>::deserialize(de).map(|x| { x.unwrap_or_else(|| T::default())})
 }
 
