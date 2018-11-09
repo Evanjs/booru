@@ -25,14 +25,14 @@ use image::*;
 const BASE_URI: &'static str = "https://danbooru.donmai.us/";
 
 #[derive(Deserialize, Debug)]
-struct Config {
+pub struct Config {
     pub api_key: String
 }
 
 // todo: consider traits
-struct BooruClient {
-    api_key: String,
-    client: reqwest::Client,
+pub struct BooruClient {
+    pub api_key: String,
+    pub client: reqwest::Client,
 }
 
 impl BooruClient {
@@ -43,7 +43,7 @@ impl BooruClient {
         }
     }
 
-    fn get_posts(&self) -> Result<Vec<posts::Post>, String> {
+    pub fn get_posts(&self) -> Result<Vec<posts::Post>, String> {
         let base_url = reqwest::Url::parse(BASE_URI).ok().expect("failed to parse base url");
         let url = base_url.join("posts.json?").ok().expect("failed to parse url");
         let builder = self.client.get(url);
@@ -110,7 +110,7 @@ impl BooruClient {
         }
     }
 
-    fn get_image(&self, post: posts::Post) -> Result<DynamicImage, ImageError> {
+    pub fn get_image(&self, post: posts::Post) -> Result<DynamicImage, ImageError> {
         let url = reqwest::Url::parse(&post.get_file_url()).ok().expect("failed to get thing");
         let mut buf: Vec<u8> = vec![];
         self.client.get(url).send().unwrap().copy_to(&mut buf);
