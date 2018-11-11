@@ -26,19 +26,22 @@ const BASE_URI: &'static str = "https://danbooru.donmai.us/";
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
-    pub api_key: String
+    pub api_key: String,
+    pub login: String
 }
 
 // todo: consider traits
 pub struct BooruClient {
     pub api_key: String,
+    pub login: String,
     pub client: reqwest::Client,
 }
 
 impl BooruClient {
-    pub fn new(api_key: String) -> Self {
+    pub fn new(login: String, api_key: String) -> Self {
         BooruClient {
             api_key,
+            login,
             client: reqwest::Client::new()
         }
     }
@@ -69,6 +72,7 @@ impl BooruClient {
             .query(&[
                 ("tags", query),
                 ("api_key", self.api_key.to_owned()),
+                ("login", self.login.to_owned()),
                 ("limit", "25".to_string())
             ]);
         trace!("{:#?}", builder);
@@ -124,7 +128,7 @@ impl BooruClient {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
     // env management
     extern crate envy;
     extern crate dotenv;
