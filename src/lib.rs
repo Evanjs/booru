@@ -171,7 +171,7 @@ mod tests {
     // todo: check if this is fixed
     fn multiple_tag_query() {
         let booru = BooruClient::new(dotenv::var("API_KEY").ok().unwrap());
-        let tags = "goblin_slayer rating:s sword_maiden 1girl";
+        let tags = "goblin_slayer! rating:s sword_maiden 1girl";
         booru.search_tag(tags.to_string()).ok();
     }
 
