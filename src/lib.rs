@@ -1,7 +1,15 @@
 pub mod posts;
 pub mod errors;
+pub mod tags;
+
+use std::error::Error;
+use std::fs::File;
+
 
 extern crate reqwest;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[macro_use]
 extern crate serde_derive;
@@ -20,14 +28,20 @@ extern crate image;
 extern crate serde_json;
 
 use image::*;
+use std::path::Path;
+
+extern crate directories;
+
+use directories::{BaseDirs, UserDirs, ProjectDirs};
 
 //const API_KEY: &'static str = "";
 const BASE_URI: &'static str = "https://danbooru.donmai.us/";
 
+
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub api_key: String,
-    pub login: String
+    pub login: String,
 }
 
 // todo: consider traits
@@ -35,6 +49,7 @@ pub struct BooruClient {
     pub api_key: String,
     pub login: String,
     pub client: reqwest::Client,
+    pub favorites: tags::Tags,
 }
 
 impl BooruClient {
@@ -42,7 +57,8 @@ impl BooruClient {
         BooruClient {
             api_key,
             login,
-            client: reqwest::Client::new()
+            client: reqwest::Client::new(),
+            favorites: tags::Tags::default(),
         }
     }
 
@@ -62,6 +78,45 @@ impl BooruClient {
         } else {
             Err(format!("Something else happened. Status: {:?}", request.status()))
         }
+    }
+
+
+    fn read_tags_from_file<P: AsRef<Path>>(&self, path: P) -> Result<tags::Tags, Box<Error>> {
+        let file = File::open(path)?;
+        let u = serde_json::from_reader(file)?;
+        Ok(u)
+    }
+
+    pub fn get_favorites(&self) -> Result<tags::Tags, Box<Error>> {
+        self.read_tags_from_file("favorites")
+    }
+
+    pub fn save_favorites(&self) {
+        let path = self.get_config_dir().unwrap();
+        let file = &File::create(path.join("favorites")).expect("failed to create file");
+        ::serde_json::to_writer(file, &self.favorites).expect("failed to write to favorites file")
+    }
+
+
+    // TODO: Consider lazy_static!, or similar
+
+    /// Get configuration from standard configuration directory:
+    /// * Linux: /home/alice/.config/booru/
+    /// * Mac: /Users/Alice/Library/Preferences/com.evanjs.booru/
+    /// * Windows: C:\Users\Alice\AppData\Roaming\evanjs\booru\config\
+    fn get_config_dir(&self) -> Option<std::path::PathBuf> {
+        if let Some(proj_dirs) = ProjectDirs::from("com", "evanjs", "booru") {
+            std::fs::create_dir_all(proj_dirs.config_dir()).expect("Failed to create config directory");
+            Some(proj_dirs.config_dir().to_path_buf())
+        } else {
+            None
+        }
+    }
+
+
+    pub fn add_to_tags(&mut self, tag: tags::Tag) {
+        self.favorites.tags.insert(tag);
+        self.save_favorites()
     }
 
     // todo: add error handling for api limits.  example: "You cannot search more than 2 tags"  This is currently panicking from such error
@@ -117,21 +172,21 @@ impl BooruClient {
     pub fn get_image(&self, post: posts::Post) -> Result<DynamicImage, ImageError> {
         let url = reqwest::Url::parse(&post.get_file_url()).ok().expect("failed to get thing");
         let mut buf: Vec<u8> = vec![];
-        self.client.get(url).send().unwrap().copy_to(&mut buf);
+        drop(self.client.get(url).send().unwrap().copy_to(&mut buf));
         let img = image::load_from_memory(&buf);
         img
     }
 }
 
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
     // env management
     extern crate envy;
     extern crate dotenv;
+
     use std::env;
 
     #[start]
@@ -198,5 +253,13 @@ mod tests {
             dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let id = 3293386;
         let post = booru.get_post_by_id(id);
+    }
+
+    #[test]
+    fn read_favorites() {
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
+        let favorites = booru.get_favorites();
     }
 }
