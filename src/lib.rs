@@ -140,6 +140,7 @@ mod tests {
 
         match envy::from_env::<Config>() {
             Ok(config) => {
+                env::set_var("LOGIN", config.login);
                 env::set_var("API_KEY", config.api_key);
             }
             Err(e) => {
@@ -150,7 +151,9 @@ mod tests {
 
     #[test]
     fn null_fields() {
-        let booru = BooruClient::new(dotenv::var("API_KEY").ok().expect("failed to retrieve api key"));
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let data = booru.get_posts().unwrap();
         assert_gt!(data.len(), 0);
         data.iter().filter(|p| p.get_last_comment_bumped_at() == "").for_each(|x| println!("{:?}", x));
@@ -158,7 +161,9 @@ mod tests {
 
     #[test]
     fn get_image() {
-        let booru = BooruClient::new(dotenv::var("API_KEY").ok().expect("failed to retrieve api key"));
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
         // let u = "https://danbooru.donmai.us/data/sample/sample-e976cde6cc68aca3108527561798b980.jpg";
         let post = booru.get_post_by_id(3293386);
         let img = booru.get_image(post.unwrap()).expect("failed to get image");
@@ -170,21 +175,27 @@ mod tests {
     // #[should_panic] // this will fail unless an api key and login (supporting more than 2 tags) is provided
     // todo: check if this is fixed
     fn multiple_tag_query() {
-        let booru = BooruClient::new(dotenv::var("API_KEY").ok().unwrap());
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let tags = "goblin_slayer! rating:s sword_maiden 1girl";
         booru.search_tag(tags.to_string()).ok();
     }
 
     #[test]
     fn normal_get_posts() {
-        let booru = BooruClient::new(dotenv::var("API_KEY").ok().unwrap());
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let tags = "goblin_slayer! sword_maiden";
         let results = booru.search_tag(tags.to_string()).ok();
     }
 
     #[test]
     fn get_post() {
-        let booru = BooruClient::new(dotenv::var("API_KEY").ok().unwrap());
+        let booru = BooruClient::new(
+            dotenv::var("LOGIN").ok().expect("failed to get login"),
+            dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let id = 3293386;
         let post = booru.get_post_by_id(id);
     }
