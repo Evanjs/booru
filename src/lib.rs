@@ -46,7 +46,7 @@ pub struct Config {
 pub struct BooruClient {
     pub api_key: String,
     pub login: String,
-    pub client: reqwest::Client,
+    pub client: reqwest::blocking::Client,
     pub favorites: tags::Tags,
 }
 
@@ -55,7 +55,7 @@ impl BooruClient {
         BooruClient {
             api_key,
             login,
-            client: reqwest::Client::new(),
+            client: reqwest::blocking::Client::new(),
             favorites: tags::Tags::default(),
         }
     }

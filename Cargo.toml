@@ -5,14 +5,14 @@ authors = ["Evan Stoll <evanjsx@gmail.com>"]
 
 [dependencies]
 dotenv = "0.15.0"
-reqwest = "0.9.22"
-serde = "1.0.103"
-serde_derive = "1.0.103"
+reqwest = { version = "0.10.0", features = [ "blocking", "json" ] }
+serde = "1.0.104"
+serde_derive = "1.0.104"
 url = "2.1.0"
 serde_json = "1.0.44"
 more-asserts = "0.2.1"
 image = "0.22.3"
-hyper = "0.12.35"
+hyper = "0.13.1"
 env_logger = "0.7.1"
 log = "0.4.8"
 envy = "0.4.0"
