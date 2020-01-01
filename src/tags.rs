@@ -3,7 +3,6 @@ use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Tags {
-    #[derive(Serialize, Deserialize)]
     pub tags: HashSet<Tag>,
 }
 
@@ -50,8 +49,6 @@ pub struct Tags {
 //    }
 //}
 
-
-
 #[derive(Serialize, Deserialize, Debug, Default, Hash, Eq, PartialEq)]
 pub struct Tag {
     pub tag: String,
@@ -59,10 +56,7 @@ pub struct Tag {
 }
 
 impl Tag {
-    pub fn new (tag: String, tag_type: String) -> Tag {
-        Tag {
-            tag,
-            tag_type
-        }
+    pub fn new(tag: String, tag_type: String) -> Tag {
+        Tag { tag, tag_type }
     }
 }
