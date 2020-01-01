@@ -3,7 +3,6 @@ struct KeeperData {
     uid: u64,
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Post {
     id: u64,
@@ -81,7 +80,6 @@ pub struct Post {
 }
 
 impl Post {
-
     pub fn get_large_file_url(&self) -> String {
         return self.large_file_url.to_string();
     }
@@ -93,7 +91,6 @@ impl Post {
     pub fn get_image_height(&self) -> u64 {
         return self.image_height;
     }
-
 
     pub fn get_id(&self) -> u64 {
         return self.id;
@@ -141,9 +138,10 @@ impl Post {
 }
 
 fn default_if_empty<'de, D, T>(de: D) -> Result<T, D::Error>
-    where D: serde::Deserializer<'de>, T: serde::Deserialize<'de> + Default,
+where
+    D: serde::Deserializer<'de>,
+    T: serde::Deserialize<'de> + Default,
 {
     use serde::Deserialize;
-    Option::<T>::deserialize(de).map(|x| { x.unwrap_or_else(|| T::default())})
+    Option::<T>::deserialize(de).map(|x| x.unwrap_or_else(|| T::default()))
 }
-

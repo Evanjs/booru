@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-
 #[derive(Serialize, Deserialize, Default)]
 pub struct Tags {
     pub tags: HashSet<Tag>,
