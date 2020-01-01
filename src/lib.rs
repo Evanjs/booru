@@ -32,7 +32,7 @@ use std::path::Path;
 
 extern crate directories;
 
-use directories::{BaseDirs, UserDirs, ProjectDirs};
+use directories::{ProjectDirs};
 
 //const API_KEY: &'static str = "";
 const BASE_URI: &'static str = "https://danbooru.donmai.us/";
@@ -81,13 +81,13 @@ impl BooruClient {
     }
 
 
-    fn read_tags_from_file<P: AsRef<Path>>(&self, path: P) -> Result<tags::Tags, Box<Error>> {
+    fn read_tags_from_file<P: AsRef<Path>>(&self, path: P) -> Result<tags::Tags, Box<dyn Error>> {
         let file = File::open(path)?;
         let u = serde_json::from_reader(file)?;
         Ok(u)
     }
 
-    pub fn get_favorites(&self) -> Result<tags::Tags, Box<Error>> {
+    pub fn get_favorites(&self) -> Result<tags::Tags, Box<dyn Error>> {
         self.read_tags_from_file("favorites")
     }
 
@@ -243,7 +243,7 @@ mod tests {
             dotenv::var("LOGIN").ok().expect("failed to get login"),
             dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let tags = "goblin_slayer! sword_maiden";
-        let results = booru.search_tag(tags.to_string()).ok();
+        let _results = booru.search_tag(tags.to_string()).ok();
     }
 
     #[test]
@@ -252,7 +252,7 @@ mod tests {
             dotenv::var("LOGIN").ok().expect("failed to get login"),
             dotenv::var("API_KEY").ok().expect("failed to get api key"));
         let id = 3293386;
-        let post = booru.get_post_by_id(id);
+        let _post = booru.get_post_by_id(id);
     }
 
     #[test]
@@ -260,6 +260,6 @@ mod tests {
         let booru = BooruClient::new(
             dotenv::var("LOGIN").ok().expect("failed to get login"),
             dotenv::var("API_KEY").ok().expect("failed to get api key"));
-        let favorites = booru.get_favorites();
+        let _favorites = booru.get_favorites();
     }
 }
