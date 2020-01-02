@@ -19,17 +19,17 @@ pub struct Post {
     image_width: u64,
     image_height: u64,
     tag_string: String,
-    is_note_locked: bool,
+    is_note_locked: Option<bool>,
     fav_count: u64,
     #[serde(deserialize_with = "default_if_empty")]
     #[serde(default)]
     file_ext: String,
     #[serde(deserialize_with = "default_if_empty")]
     last_noted_at: String,
-    is_rating_locked: bool,
+    is_rating_locked: Option<bool>,
     #[serde(deserialize_with = "default_if_empty")]
     parent_id: u64,
-    has_children: bool,
+    has_children: Option<bool>,
     #[serde(deserialize_with = "default_if_empty")]
     approver_id: u64,
     tag_count_general: u64,
@@ -37,32 +37,32 @@ pub struct Post {
     tag_count_character: u64,
     tag_count_copyright: u64,
     file_size: u64,
-    is_status_locked: bool,
+    is_status_locked: Option<bool>,
     pool_string: String,
     up_score: i64,
     down_score: i64,
-    is_pending: bool,
-    is_flagged: bool,
-    is_deleted: bool,
+    is_pending: Option<bool>,
+    is_flagged: Option<bool>,
+    is_deleted: Option<bool>,
     tag_count: u64,
     updated_at: String,
-    is_banned: bool,
+    is_banned: Option<bool>,
     #[serde(deserialize_with = "default_if_empty")]
     pixiv_id: u64,
     #[serde(deserialize_with = "default_if_empty")]
     last_commented_at: String,
-    has_active_children: bool,
+    has_active_children: Option<bool>,
     bit_flags: u64,
     tag_count_meta: u64,
     #[serde(deserialize_with = "default_if_empty")]
     #[serde(default)]
     keeper_data: KeeperData,
     uploader_name: String,
-    has_large: bool,
-    has_visible_children: bool,
+    has_large: Option<bool>,
+    has_visible_children: Option<bool>,
     #[serde(deserialize_with = "default_if_empty")]
     children_ids: String,
-    is_favorited: bool,
+    is_favorited: Option<bool>,
     tag_string_general: String,
     tag_string_character: String,
     tag_string_copyright: String,
