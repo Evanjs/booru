@@ -43,6 +43,7 @@ pub struct Config {
 }
 
 // todo: consider traits
+#[derive(Clone)]
 pub struct BooruClient {
     pub api_key: String,
     pub login: String,
@@ -124,14 +125,20 @@ impl BooruClient {
     }
 
     // todo: add error handling for api limits.  example: "You cannot search more than 2 tags"  This is currently panicking from such error
-    pub fn search_tag(&self, query: String) -> Result<Vec<posts::Post>, String> {
+    pub fn search_tag(
+        &self,
+        query: String,
+        limit: Option<u8>,
+        page: Option<u64>,
+    ) -> Result<Vec<posts::Post>, String> {
         let base_url: reqwest::Url = reqwest::Url::parse(BASE_URI).ok().unwrap();
         let url = base_url.join("posts.json?").ok().unwrap();
         let builder = self.client.get(url).query(&[
             ("tags", query),
             ("api_key", self.api_key.to_owned()),
             ("login", self.login.to_owned()),
-            ("limit", "25".to_string()),
+            ("limit", limit.unwrap_or(25).to_string()),
+            ("page", page.unwrap_or(1).to_string()),
         ]);
         trace!("{:#?}", builder);
         let mut request = builder.send().ok().expect("failed to send request");
